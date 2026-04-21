@@ -20,3 +20,11 @@ def load_data() -> dict:
 
 def remove_punctuation(input: str) -> str:
     return input.translate(str.maketrans("", "", string.punctuation))
+
+
+def tokenize_text(input: str) -> list[str]:
+    return input.split()
+
+
+if __name__ == "__main__":
+    print(tokenize_text("h  ey he  las "))
