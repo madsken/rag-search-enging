@@ -12,10 +12,10 @@ def search_command(query: str, limit: int = SEARCH_LIMT) -> list[dict]:
     movies = load_movies()
     matches = []
 
-    query_tokens = preprocess_text(query)
+    query_tokens = tokenize(query)
 
     for movie in movies:
-        title_tokens = preprocess_text(movie["title"])
+        title_tokens = tokenize(movie["title"])
 
         if has_matching_token(query_tokens, title_tokens):
             matches.append(movie)
@@ -33,7 +33,7 @@ def has_matching_token(q_toks: list[str], title_toks: list[str]) -> bool:
     return False
 
 
-def preprocess_text(text: str) -> list[str]:
+def tokenize(text: str) -> list[str]:
     text = remove_punctuation(text.lower())
     tokens = tokenize_text(text)
     stopwords = load_stopwords()
