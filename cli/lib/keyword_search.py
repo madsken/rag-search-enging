@@ -1,4 +1,11 @@
-from .utils import SEARCH_LIMT, load_movies, remove_punctuation, tokenize_text
+from .utils import (
+    SEARCH_LIMT,
+    load_movies,
+    load_stopwords,
+    remove_punctuation,
+    tokenize_text,
+    stem_tokens,
+)
 
 
 def search_command(query: str, limit: int = SEARCH_LIMT) -> list[dict]:
@@ -27,7 +34,9 @@ def has_matching_token(q_toks: list[str], title_toks: list[str]) -> bool:
 
 
 def preprocess_text(text: str) -> list[str]:
-    text = text.lower()
-    text = remove_punctuation(text)
+    text = remove_punctuation(text.lower())
     tokens = tokenize_text(text)
-    return tokens
+    stopwords = load_stopwords()
+    filtered_tokens = [x for x in tokens if x not in stopwords]
+    stemmed_tokens = stem_tokens(filtered_tokens)
+    return stemmed_tokens
