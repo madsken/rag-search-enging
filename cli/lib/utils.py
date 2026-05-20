@@ -41,13 +41,18 @@ def tokenize_text(input: str) -> list[str]:
     return cleaned_tokens
 
 
-if __name__ == "__main__":
-    print(tokenize_text("h  ey he  las "))
-
-
 def stem_tokens(tokens: list[str]) -> list[str]:
     stemmer = PorterStemmer()
     stemmed_tokens = []
     for token in tokens:
         stemmed_tokens.append(stemmer.stem(token))
+    return stemmed_tokens
+
+
+def tokenize(text: str) -> list[str]:
+    text = remove_punctuation(text.lower())
+    tokens = tokenize_text(text)
+    stopwords = load_stopwords()
+    filtered_tokens = [x for x in tokens if x not in stopwords]
+    stemmed_tokens = stem_tokens(filtered_tokens)
     return stemmed_tokens

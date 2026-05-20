@@ -1,26 +1,31 @@
+from lib.inverted_index import InvertedIndex
 from .utils import (
     SEARCH_LIMT,
-    load_movies,
-    load_stopwords,
-    remove_punctuation,
-    tokenize_text,
-    stem_tokens,
+    tokenize,
 )
 
 
 def search_command(query: str, limit: int = SEARCH_LIMT) -> list[dict]:
-    movies = load_movies()
     matches = []
+    movie_db = InvertedIndex()
+    try:
+        movie_db.load()
+    except FileNotFoundError as e:
+        print(f"Error: File not found\n{e}")
+        return matches
 
     query_tokens = tokenize(query)
 
-    for movie in movies:
-        title_tokens = tokenize(movie["title"])
-
-        if has_matching_token(query_tokens, title_tokens):
-            matches.append(movie)
+    seen = set()
+    for tok in query_tokens:
+        ids = movie_db.get_documents(tok)
+        for id in ids:
+            if id in seen:
+                continue
+            seen.add(id)
+            matches.append(movie_db.docmap[id])
             if len(matches) >= limit:
-                break
+                return matches
 
     return matches
 
@@ -31,12 +36,3 @@ def has_matching_token(q_toks: list[str], title_toks: list[str]) -> bool:
             if q_tok in title_tok:
                 return True
     return False
-
-
-def tokenize(text: str) -> list[str]:
-    text = remove_punctuation(text.lower())
-    tokens = tokenize_text(text)
-    stopwords = load_stopwords()
-    filtered_tokens = [x for x in tokens if x not in stopwords]
-    stemmed_tokens = stem_tokens(filtered_tokens)
-    return stemmed_tokens
